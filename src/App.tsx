@@ -1,4 +1,4 @@
-import React from "react";
+import { Transition } from "@headlessui/react";
 import {
   ChatIcon,
   CogIcon,
@@ -8,21 +8,26 @@ import {
   PhoneMissedCallIcon,
   PlusIcon,
   UploadIcon,
-  XIcon,
+  XIcon
 } from "@heroicons/react/outline";
+import AudioMotionAnalyzer from "audiomotion-analyzer";
+import React from "react";
+import { Message } from "./Message";
+import elmo from "./pfp/elmo.png";
 import fancySpongebob from "./pfp/fancy-spongebob.jpg";
 import harshProjectManager from "./pfp/manager.png";
-import elmo from "./pfp/elmo.png";
-import { Message } from "./Message";
-import { Transition } from "@headlessui/react";
-import AudioMotionAnalyzer from "audiomotion-analyzer";
-import * as path from "path";
+
 
 function App() {
-  const [mikeAudio, setMikeAudio] = React.useState<any | undefined>();
-  const [audioMotionAnalyser, setAudioMotionAnalyser] = React.useState<
-    any | undefined
-  >();
+  const startingCallSound = new Audio('audio/effects/dial-up.mp3');
+  const mikeSound = new Audio('audio/why-you-calling-me.mp3');
+  const managerSound = new Audio('audio/stereo-test.mp3');
+  const [staringCallAudio, setStaringCallAudio] = React.useState(startingCallSound);
+  const [mikeAudio, setMikeAudio] = React.useState(mikeSound);
+  const [managerAudio, setManagerAudio] = React.useState(managerSound);
+  const startingCallAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: startingCallSound });
+  const mikeAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: mikeSound });
+  const managerAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: managerSound });
 
   const [startCall, setStartCall] = React.useState(false);
   const [callEnded, setCallEnded] = React.useState(false);
@@ -38,42 +43,58 @@ function App() {
       case "n":
         setMicrophoneMike(false);
         break;
-      case "m":
+      case "c":
         setMicrophoneManager(false);
         break;
     }
   };
   const keybindHandlerDown = (event: any) => {
     switch (event.key) {
+      case "i":
+        mikeAudio?.pause();
+        mikeAudio.currentTime = 0;
+        mikeAudio?.play();
+        break;
+      case "m":
+        managerAudio?.pause();
+        managerAudio.currentTime = 0;
+        managerAudio?.play();
+        break;
       case "n":
         setMicrophoneMike(true);
         break;
-      case "m":
+      case "c":
         setMicrophoneManager(true);
         break;
     }
   };
-  //  const audioAnalyserForMike = (data: any) => {
-  //    console.log({ data });
-  //    console.log(audioMotionAnalyser.getEnergy());
-  //  };
+
   React.useEffect(() => {
+    if (startCall) {
+      startingCallSound?.play();
+      setTimeout(() => {
+        mikeAudio?.play();
+        // managerAudio?.play();
+        startingCallSound?.pause();
+
+      }, 4000);
+    }
+  }, [startCall]);
+
+  React.useEffect(() => {
+    let audioInterval = setInterval(() => {
+      setMicrophoneMike(mikeAudioMotionAnalyser.getEnergy() * 100 > 2);
+      setMicrophoneManager(managerAudioMotionAnalyser.getEnergy() * 100 > 2);
+    }, 10);
     document.body.addEventListener("keyup", keybindHandlerUp);
     document.body.addEventListener("keydown", keybindHandlerDown);
     return () => {
+      clearInterval(audioInterval);
       document.body.removeEventListener("keyup", keybindHandlerUp);
       document.body.removeEventListener("keydown", keybindHandlerDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  React.useEffect(() => {
-    //    setAudioMotionAnalyser(
-    //      new AudioMotionAnalyzer(undefined, {
-    //        source: mikeAudio,
-    //        useCanvas: false,
-    //      })
-    //    );
-    mikeAudio?.play();
-  }, [mikeAudio]);
   return (
     <div className="flex flex-col justify-center items-center bg-gray-900 h-screen">
       <Transition
@@ -106,13 +127,12 @@ function App() {
         <div className="flex flex-row w-max bg-gray-800 rounded-full h-16 p-2 space-x-2">
           <button
             type="button"
-            className={`flex w-12 h-12 ${
-              !microphoneMikeMuted
-                ? microphoneMike
-                  ? "bg-green-500"
-                  : "bg-blue-500"
-                : "bg-red-500"
-            } transition-colors rounded-full justify-center items-center text-white`}
+            className={`flex w-12 h-12 ${!microphoneMikeMuted || !mikeAudio.played || mikeAudio.paused
+              ? mikeAudio.played && !mikeAudio.paused
+                ? "bg-green-500"
+                : "bg-blue-500"
+              : "bg-red-500"
+              } rounded-full justify-center items-center text-white`}
             onClick={() => {
               setMicrophoneMikeMuted((mic) => !mic);
             }}
@@ -141,6 +161,10 @@ function App() {
             type="button"
             className="flex w-12 h-12 bg-red-500 rounded-full justify-center items-center text-white"
             onClick={() => {
+              mikeAudio?.pause();
+              mikeAudio.currentTime = 0;
+              managerAudio?.pause();
+              managerAudio.currentTime = 0;
               closeCall();
             }}
           >
@@ -163,9 +187,6 @@ function App() {
             type="button"
             className="flex w-12 h-12 bg-green-500 transition-colors rounded-full justify-center items-center text-white"
             onClick={() => {
-              setMikeAudio(
-                new Audio(path.join(__dirname, "./audio/stereo-test.mp3"))
-              );
               setStartCall(true);
             }}
           >
@@ -277,13 +298,12 @@ function App() {
           <div className="flex flex-col max-w-lg">
             <div className="w-max h-20 flex flex-row">
               <div
-                className={`w-20 h-full ${
-                  !microphoneMikeMuted
-                    ? microphoneMike
-                      ? "bg-green-500"
-                      : "bg-blue-500"
-                    : "bg-red-500"
-                } transition-all duration-100 rounded-full p-1`}
+                className={`w-20 h-full ${!microphoneMikeMuted
+                  ? microphoneMike
+                    ? "bg-green-500"
+                    : "bg-blue-500"
+                  : "bg-red-500"
+                  } transition-all duration-100 rounded-full p-1`}
                 style={{
                   boxShadow: !microphoneMikeMuted
                     ? microphoneMike
@@ -323,9 +343,8 @@ function App() {
           <div className="w-full flex flex-col space-x-10">
             <div className="w-max h-20 flex flex-row">
               <div
-                className={`w-20 h-full ${
-                  microphoneManager ? "bg-green-500" : "bg-blue-500"
-                } transition-all duration-100 rounded-full p-1`}
+                className={`w-20 h-full ${microphoneManager ? "bg-green-500" : "bg-blue-500"
+                  } transition-all duration-100 rounded-full p-1`}
                 style={{
                   boxShadow: microphoneManager
                     ? "0px 0px 20px 0px rgba(16, 185, 129, 0.25)"
