@@ -18,9 +18,14 @@ import { Transition } from "@headlessui/react";
 
 function App() {
   const [startCall, setStartCall] = React.useState(false);
+  const [callEnded, setCallEnded] = React.useState(false);
   const [microphoneMike, setMicrophoneMike] = React.useState(false);
   const [microphoneMikeMuted, setMicrophoneMikeMuted] = React.useState(false);
   const [microphoneManager, setMicrophoneManager] = React.useState(false);
+  const closeCall = () => {
+    setStartCall(false);
+    setCallEnded(true);
+  };
   const keybindHandlerUp = (event: any) => {
     switch (event.key) {
       case "n":
@@ -51,6 +56,23 @@ function App() {
   }, []);
   return (
     <div className="flex flex-col justify-center items-center bg-gray-900 h-screen">
+      <Transition
+        show
+        className="absolute top-2"
+        enter="transition duration-100 ease-out"
+        enterFrom="transform scale-95 opacity-0"
+        enterTo="transform scale-100 opacity-100"
+        leave="transition duration-75 ease-out"
+        leaveFrom="transform scale-100 opacity-100"
+        leaveTo="transform scale-95 opacity-0"
+      >
+        <div className="flex flex-row w-max h-16 p-2 space-x-2 text-white">
+          <span>Macrohard Beams</span>
+          <span>
+            <LightningBoltIcon className="w-6 h-6 text-yellow-400" />
+          </span>
+        </div>
+      </Transition>
       <Transition
         show={startCall}
         className="absolute bottom-2"
@@ -99,7 +121,7 @@ function App() {
             type="button"
             className="flex w-12 h-12 bg-red-500 rounded-full justify-center items-center text-white"
             onClick={() => {
-              setStartCall(false);
+              closeCall();
             }}
           >
             <XIcon className="w-6 h-6" />
@@ -107,7 +129,7 @@ function App() {
         </div>
       </Transition>
       <Transition
-        show={!startCall}
+        show={!startCall && !callEnded}
         className="absolute bottom-2"
         enter="transition duration-100 ease-out"
         enterFrom="transform scale-95 opacity-0"
@@ -190,7 +212,7 @@ function App() {
         leave="transition duration-500 ease-out"
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-0"
-        show={!startCall}
+        show={!startCall && !callEnded}
       >
         <div className="flex flex-row space-x-10 transition-all scale-150">
           <div className="w-full flex flex-col space-x-10">
