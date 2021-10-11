@@ -15,8 +15,15 @@ import harshProjectManager from "./pfp/manager.png";
 import elmo from "./pfp/elmo.png";
 import { Message } from "./Message";
 import { Transition } from "@headlessui/react";
+import AudioMotionAnalyzer from "audiomotion-analyzer";
+import * as path from "path";
 
 function App() {
+  const [mikeAudio, setMikeAudio] = React.useState<any | undefined>();
+  const [audioMotionAnalyser, setAudioMotionAnalyser] = React.useState<
+    any | undefined
+  >();
+
   const [startCall, setStartCall] = React.useState(false);
   const [callEnded, setCallEnded] = React.useState(false);
   const [microphoneMike, setMicrophoneMike] = React.useState(false);
@@ -46,6 +53,10 @@ function App() {
         break;
     }
   };
+  //  const audioAnalyserForMike = (data: any) => {
+  //    console.log({ data });
+  //    console.log(audioMotionAnalyser.getEnergy());
+  //  };
   React.useEffect(() => {
     document.body.addEventListener("keyup", keybindHandlerUp);
     document.body.addEventListener("keydown", keybindHandlerDown);
@@ -54,6 +65,15 @@ function App() {
       document.body.removeEventListener("keydown", keybindHandlerDown);
     };
   }, []);
+  React.useEffect(() => {
+    //    setAudioMotionAnalyser(
+    //      new AudioMotionAnalyzer(undefined, {
+    //        source: mikeAudio,
+    //        useCanvas: false,
+    //      })
+    //    );
+    mikeAudio?.play();
+  }, [mikeAudio]);
   return (
     <div className="flex flex-col justify-center items-center bg-gray-900 h-screen">
       <Transition
@@ -143,6 +163,9 @@ function App() {
             type="button"
             className="flex w-12 h-12 bg-green-500 transition-colors rounded-full justify-center items-center text-white"
             onClick={() => {
+              setMikeAudio(
+                new Audio(path.join(__dirname, "./audio/stereo-test.mp3"))
+              );
               setStartCall(true);
             }}
           >
