@@ -1,21 +1,27 @@
 import React from 'react'
 import AudioMotionAnalyzer from 'audiomotion-analyzer';
 export type ParticipantState = 'play' | 'pause' | 'stop';
+
 export interface ParticipantInterface {
   audioFile: string;
   profile: string;
   muted: boolean;
   state: ParticipantState;
   name: string;
+  traits: Array<{ name: string; color: string }>
+  tags: Array<string>
 }
-export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, profile, name, muted }) => {
+
+export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, profile, name, muted, traits, tags }) => {
   let participantAudioMotionAnalyser: AudioMotionAnalyzer;
   const [participantSound, setParticipantSound] = React.useState<HTMLAudioElement>(new Audio(audioFile));
   const [microphone, setMicrophone] = React.useState(false);
+
   React.useEffect(() => {
     participantAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: participantSound });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   React.useEffect(() => {
     switch (state) {
       case "play":
@@ -71,16 +77,13 @@ export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, 
           <div className="w-full flex flex-row space-x-2 justify-center items-center">
             <span className="text-2xl mr-auto">{name}</span>
             <div className="w-max h-full flex flex-row-reverse items-center space-x-reverse space-x-2">
-              <span className="text-sm text-yellow-600 bg-yellow-200 rounded-full py-1 px-3">
-                first-week
-              </span>
-              <span className="text-sm text-red-600 bg-red-300 rounded-full py-1 px-3">
-                intern
-              </span>
+              {traits.map((trait) => (<span className={`text-sm ${trait.color} rounded-full py-1 px-3 `}>
+                {trait.name}
+              </span>))}
             </div>
           </div>
-          <span className="text-lg text-gray-600">
-            #remote-work #noob #expert
+          <span className="text-lg text-gray-600 flex flex-row overflow-ellipsis">
+            {tags.map((t) => (<span>#{t}</span>))}
           </span>
         </div>
       </div>

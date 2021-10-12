@@ -17,7 +17,7 @@ import Participant, { ParticipantInterface } from './Participant';
 
 
 function App() {
-  const [participants, setParticipants] = React.useState<ParticipantInterface[]>([{ name: "Mike", audioFile: "audio/why-you-calling-me.mp3", profile: "pfp/fancy-spongebob.jpg", state: "stop", muted: false }, { name: "Mike", audioFile: "audio/stereo-test.mp3", profile: "pfp/manager.png", state: "stop", muted: false }]);
+  const [participants, setParticipants] = React.useState<ParticipantInterface[]>([{ name: "Mike", audioFile: "audio/why-you-calling-me.mp3", profile: "pfp/fancy-spongebob.jpg", state: "stop", muted: false, traits: [{ name: "first-week", color: "bg-yellow-500 text-red-600" }, { name: "intern", color: "bg-green-200 text-green-600" }], tags: ["noob", "expert", "remote-work"] }, { name: "Mike", audioFile: "audio/stereo-test.mp3", profile: "pfp/manager.png", state: "stop", muted: false, traits: [{ name: "Master of Disaster", color: "bg-yellow-500 text-red-600" }], tags: ["work247", "hustle"] }]);
 
   const [startCall, setStartCall] = React.useState(false);
   const [callEnded, setCallEnded] = React.useState(false);
