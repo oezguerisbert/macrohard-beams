@@ -17,24 +17,21 @@ import Participant, { ParticipantInterface } from './Participant';
 
 
 function App() {
-  const startingCallSound = new Audio('audio/effects/dial-up.mp3');
-  const participants = [React.useState<ParticipantInterface>({ name: "Mike", audioFile: "audio/why-you-calling-me.mp3", profile: "pfp/fancy-spongebob.jpg", state: "stop", muted: false })]
+  const [participants, setParticipants] = React.useState<ParticipantInterface[]>([{ name: "Mike", audioFile: "audio/why-you-calling-me.mp3", profile: "pfp/fancy-spongebob.jpg", state: "stop", muted: false }, { name: "Mike", audioFile: "audio/stereo-test.mp3", profile: "pfp/manager.png", state: "stop", muted: false }]);
+
   const [startCall, setStartCall] = React.useState(false);
   const [callEnded, setCallEnded] = React.useState(false);
 
   const closeCall = () => {
-    participants.forEach((p) => p[1](s => ({ ...s, state: 'stop' })))
+
     setStartCall(false);
     setCallEnded(true);
   };
 
   React.useEffect(() => {
     if (startCall) {
-      startingCallSound.play();
-      setTimeout(() => {
-        startingCallSound.pause();
-        participants.forEach((p) => { p[1](s => ({ ...s, state: 'play' })); });
-      }, 4000);
+      setParticipants(ps => ps.map((p) => { p.state = "play"; return p; }))
+      // participants.forEach((p) => { p.state = 'play'; });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startCall]);
@@ -70,14 +67,14 @@ function App() {
         <div className="flex flex-row w-max bg-gray-800 rounded-full h-16 p-2 space-x-2">
           <button
             type="button"
-            className={`flex w-12 h-12 ${!participants[0][0].muted
-              ? participants[0][0].state === "play"
+            className={`flex w-12 h-12 ${!participants[0].muted
+              ? participants[0].state === "play"
                 ? "bg-green-500"
                 : "bg-blue-500"
               : "bg-red-500"
               } rounded-full justify-center items-center text-white`}
             onClick={() => {
-              participants[0][1](s => ({ ...s, muted: !s.muted }));
+              setParticipants((p) => p.map((p, i) => { if (i === 0) { p.muted = !p.muted; return p } else { return p } }))
             }}
           >
             <MicrophoneIcon className="w-6 h-6" />
@@ -104,6 +101,7 @@ function App() {
             type="button"
             className="flex w-12 h-12 bg-red-500 rounded-full justify-center items-center text-white"
             onClick={() => {
+              setParticipants(ps => ps.map((p) => { p.state = "stop"; return p; }));
               closeCall();
             }}
           >
@@ -140,7 +138,7 @@ function App() {
           <button
             type="button"
             className="flex w-12 h-12 bg-red-500 rounded-full justify-center items-center text-white"
-          >
+            onClick={() => { setCallEnded(true) }} >
             <PhoneMissedCallIcon className="w-6 h-6" />
           </button>
         </div>
@@ -197,8 +195,9 @@ function App() {
         leaveTo="transform scale-95 opacity-0"
         show={!startCall && !callEnded}
       >
-        <Caller name="Project Manager" profile="pfp/manager.png" />
+        <Caller name="Project Manager" skip={startCall || callEnded} profile="pfp/manager.png" />
       </Transition>
+
       <Transition
         enter="transition duration-1000 delay-500 ease-out"
         enterFrom="transform scale-95 opacity-0"
@@ -209,7 +208,7 @@ function App() {
         show={startCall}
       >
         <div className="flex flex-row space-x-10 transition-all scale-150">
-          {participants.map((p, i) => <Participant key={i} {...p[0]} />)}
+          {participants.map((p, i) => <Participant key={i} {...p} />)}
         </div>
       </Transition>
     </div>

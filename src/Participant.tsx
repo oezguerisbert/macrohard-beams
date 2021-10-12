@@ -9,20 +9,33 @@ export interface ParticipantInterface {
   name: string;
 }
 export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, profile, name, muted }) => {
-  const participantSound = new Audio(audioFile);
-
+  let participantAudioMotionAnalyser: AudioMotionAnalyzer;
+  const [participantSound, setParticipantSound] = React.useState<HTMLAudioElement>(new Audio(audioFile));
   const [microphone, setMicrophone] = React.useState(false);
-  const participantAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: participantSound });
-
   React.useEffect(() => {
-    if (state === "play") {
-      setTimeout(() => { participantSound.play(); }, 100);
-      let audioInterval = setInterval(() => {
-        setMicrophone(participantAudioMotionAnalyser.getEnergy() * 100 > 2);
-      }, 10);
-      return () => {
-        clearInterval(audioInterval);
-      };
+    participantAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: participantSound });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  React.useEffect(() => {
+    switch (state) {
+      case "play":
+        setTimeout(() => { participantSound.play(); }, 100);
+        let audioInterval = setInterval(() => {
+          setMicrophone(participantAudioMotionAnalyser.getEnergy() * 100 > 2);
+        }, 10);
+        return () => {
+          clearInterval(audioInterval);
+        };
+      case "pause":
+        participantSound.pause();
+        break;
+      case "stop":
+        participantSound.pause();
+        participantSound.currentTime = 0;
+        break;
+
+      default:
+        break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
@@ -39,7 +52,7 @@ export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, 
           style={{
             boxShadow: !muted
               ? microphone
-                ? "0px 0px 20px 0px rgba(12,185,129,0.5)"
+                ? "0px 0px 40px 0px rgba(12,185,129,0.25)"
                 : "none"
               : "none",
           }}

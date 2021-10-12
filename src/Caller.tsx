@@ -3,9 +3,19 @@ import React from 'react'
 interface CallerInterface {
   profile: string;
   name: string;
+  skip: boolean;
 }
 
-const Caller: React.FC<CallerInterface> = ({ name, profile }) => {
+const Caller: React.FC<CallerInterface> = ({ name, profile, skip }) => {
+  let [waitingForCallAudio, setWaitingForCallAudio] = React.useState(new Audio('audio/effects/waiting-for-call.mp3'));
+  waitingForCallAudio.loop = true;
+  React.useEffect(() => {
+    if (skip) {
+      waitingForCallAudio.pause();
+    } else {
+      waitingForCallAudio.play();
+    }
+  }, [skip]);
   return (
     <div className="flex flex-row space-x-10 transition-all scale-150">
       <div className="w-full flex flex-col space-x-10">
