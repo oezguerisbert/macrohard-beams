@@ -19,10 +19,12 @@ export interface ParticipantInterface {
 export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, profile, name, muted, traits, tags,
   volume = 1, isBot = false }) => {
   let participantAudioMotionAnalyser: AudioMotionAnalyzer;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [participantSound, setParticipantSound] = React.useState<HTMLAudioElement>(new Audio(audioFile));
   const [microphoneLevel, setMicrophoneLevel] = React.useState(0);
   React.useEffect(() => {
     participantSound.volume = volume;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     participantAudioMotionAnalyser = new AudioMotionAnalyzer(undefined, { useCanvas: false, source: participantSound });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -84,7 +86,7 @@ export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, 
                 src={profile}
                 className="flex scale-100 w-full h-full"
               />
-              {participantSound.volume === 0 && <div className="absolute rounded-full flex w-16 h-16 bg-black bg-opacity-50 text-white justify-center items-center">
+              {(participantSound.volume === 0 || muted) && <div className="absolute rounded-full flex w-16 h-16 bg-black bg-opacity-50 text-white justify-center items-center">
                 <VolumeOffIcon className="w-5 h-5" />
               </div>}
             </div>

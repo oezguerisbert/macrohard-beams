@@ -145,6 +145,14 @@ function App() {
           </button>
           <button
             type="button"
+            className="cursor-default flex w-12 h-12 bg-transparent rounded-full justify-center items-center text-gray-700"
+          />
+          <button
+            type="button"
+            className="cursor-default flex w-12 h-12 bg-transparent rounded-full justify-center items-center text-gray-700"
+          />
+          <button
+            type="button"
             className="flex w-12 h-12 bg-red-500 rounded-full justify-center items-center text-white"
             onClick={() => { setCallEnded(true) }} >
             <PhoneMissedCallIcon className="w-6 h-6" />

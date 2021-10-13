@@ -4,7 +4,7 @@ const SnupToug = {
   audioFile: "audio/snup.mp3",
   profile: "pfp/snup-toug.png",
   state: "stop",
-  muted: true,
+  muted: false,
   volume: 0.01,
   traits: [
     {
