@@ -10,14 +10,22 @@ import {
   UploadIcon,
   XIcon
 } from "@heroicons/react/outline";
+import {
+  LightningBoltIcon as LBI
+} from "@heroicons/react/solid";
 import React from "react";
 import Caller from "./Caller";
 import { Message } from "./Message";
 import Participant, { ParticipantInterface } from './Participant';
+import Manager from "./participants/manager";
+import Mike from "./participants/mike";
+import SnupToug from "./participants/snup-toug";
+
 
 
 function App() {
-  const [participants, setParticipants] = React.useState<ParticipantInterface[]>([{ name: "Mike", audioFile: "audio/why-you-calling-me.mp3", profile: "pfp/fancy-spongebob.jpg", state: "stop", muted: false, traits: [{ name: "first-week", color: "bg-yellow-500 text-red-600" }, { name: "intern", color: "bg-green-200 text-green-600" }], tags: ["noob", "expert", "remote-work"] }, { name: "Mike", audioFile: "audio/stereo-test.mp3", profile: "pfp/manager.png", state: "stop", muted: false, traits: [{ name: "Master of Disaster", color: "bg-yellow-500 text-red-600" }], tags: ["work247", "hustle"] }]);
+  const participantList = [Mike, Manager, SnupToug];
+  const [participants, setParticipants] = React.useState<ParticipantInterface[]>(participantList);
 
   const [startCall, setStartCall] = React.useState(false);
   const [callEnded, setCallEnded] = React.useState(false);
@@ -50,7 +58,7 @@ function App() {
         <div className="flex flex-row w-max h-16 p-2 space-x-2 text-white">
           <span>Macrohard Beams</span>
           <span>
-            <LightningBoltIcon className="w-6 h-6 text-yellow-400" />
+            <LBI className="w-6 h-6 text-yellow-300" />
           </span>
         </div>
       </Transition>
@@ -197,7 +205,6 @@ function App() {
       >
         <Caller name="Project Manager" skip={startCall || callEnded} profile="pfp/manager.png" />
       </Transition>
-
       <Transition
         enter="transition duration-1000 delay-500 ease-out"
         enterFrom="transform scale-95 opacity-0"
@@ -207,7 +214,7 @@ function App() {
         leaveTo="transform scale-95 opacity-0"
         show={startCall}
       >
-        <div className="flex flex-row space-x-10 transition-all scale-150">
+        <div className={`${participants.length > 2 ? `grid-flow-row grid-rows-${participants.length}` : `grid-flow-col grid-cols-${participants.length}`}  grid w-full h-max gap-16 transition-all scale-150 justify-center items-center`}>
           {participants.map((p, i) => <Participant key={i} {...p} />)}
         </div>
       </Transition>
