@@ -1,8 +1,8 @@
 import { ParticipantInterface } from '../Participant';
 const Mike = {
   name: "Mike",
-  audioFile: "audio/why-you-calling-me.mp3",
-  profile: "pfp/fancy-spongebob.jpg",
+  audioFile: "audio/mike-squid-game.mp3",
+  profile: "pfp/mike.png",
   state: "stop",
   muted: false,
   traits: [

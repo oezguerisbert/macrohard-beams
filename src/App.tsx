@@ -24,7 +24,7 @@ import SnupToug from "./participants/snup-toug";
 
 
 function App() {
-  const participantList = [Mike, Manager, SnupToug];
+  const participantList = [Mike, Manager];
   const [participants, setParticipants] = React.useState<ParticipantInterface[]>(participantList);
 
   const [startCall, setStartCall] = React.useState(false);
@@ -44,7 +44,7 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startCall]);
   return (
-    <div className="flex flex-col justify-center items-center bg-gray-900 h-screen">
+    <div className="flex flex-col justify-center items-center bg-[#050505] h-screen">
       <Transition
         show
         className="absolute top-2"
@@ -211,7 +211,7 @@ function App() {
         leaveTo="transform scale-95 opacity-0"
         show={!startCall && !callEnded}
       >
-        <Caller name="Project Manager" skip={startCall || callEnded} profile="pfp/manager.png" />
+        <Caller name="Project Manager" skip={startCall || callEnded} profile="pfp/pm-normal.png" />
       </Transition>
       <Transition
         enter="transition duration-1000 delay-500 ease-out"

@@ -63,11 +63,11 @@ export const Participant: React.FC<ParticipantInterface> = ({ audioFile, state, 
               ? "bg-green-500"
               : "bg-blue-500"
             : "bg-red-500"
-            } transition-all duration-100 rounded-full p-1`}
+            } transition-all duration-75 rounded-full p-1`}
           style={{
             boxShadow: !muted && participantSound.volume !== 0
               ? microphoneLevel > 2
-                ? `0px 0px 0px ${Math.min(microphoneLevel * 8, 40)}px rgba(12,185,129,0.1)`
+                ? `0px 0px 0px ${microphoneLevel * 4}px rgba(12,185,129,0.1)`
                 : "none"
               : "none",
           }}

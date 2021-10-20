@@ -1,8 +1,8 @@
 import { ParticipantInterface } from '../Participant';
 const Manager = {
   name: "Project Manager",
-  audioFile: "audio/stereo-test.mp3",
-  profile: "pfp/manager.png",
+  audioFile: "audio/pm-squid-game.mp3",
+  profile: "pfp/pm-normal.png",
   state: "stop",
   muted: false,
   traits: [
